@@ -4,9 +4,14 @@ var GoalItem = React.createClass({displayName: 'Goal',
     var numberOfCols = 12 / this.props.number;
     var colClass = 'col-xs-' + numberOfCols;
     return React.DOM.div({
-      className: ['goal', colClass].concat(this.props.additionalClasses).join(' ')
+      className: 'goal-container ' + colClass
     },
-      this.props.name
+      null,
+      React.DOM.div({
+        className: 'goal ' + this.props.specialClass
+      },
+        this.props.name
+      )
     )
   }
 });
@@ -18,7 +23,9 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
       return GoalItem(_.extend(_that.props, {name: 'a name ' + i}));
     });
     return React.DOM.div.apply(
-      this, [{className: 'row'}, null].concat(goalItems));
+      this,
+      [{className: 'row goal-row'}, null]
+        .concat(goalItems));
   }
 });
 
@@ -27,8 +34,8 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
     return React.DOM.div({
       className: 'goal-container'
     },
-      GoalRow({number: 1, additionalClasses: ['primary']}),
-      GoalRow({number: 3, additionalClasses: ['secondary']})
+      GoalRow({number: 1, specialClass: 'primary'}),
+      GoalRow({number: 3, specialClass: 'secondary'})
     )
   }
 });

@@ -6,8 +6,33 @@ body {
   margin-top: 40px;
 }
 
+.goal-container {
+  padding: 0px;
+}
+
 .goal {
   text-align: center;
-  background-color: white;
+  background-color: #fff;
   padding: 20px;
+  margin-right: 9px;
+  border-bottom: 4px solid;
+  -webkit-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow:    2px 2px 5px 0px rgba(0, 0, 0, 0.4);
+  box-shadow:         2px 2px 5px 0px rgba(0, 0, 0, 0.4);
+}
+
+.col-xs-4:last-child .goal, .col-xs-12:last-child .goal {
+  margin-right: 0px;
+}
+
+.primary {
+  border-color: rgb(185, 246, 202);
+}
+
+.secondary {
+  border-color: rgb(0, 186, 210);
+}
+
+.goal-row {
+  margin-bottom: 9px;
 }
