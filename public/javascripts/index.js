@@ -2,29 +2,43 @@ var GoalItem = React.createClass({displayName: 'Goal',
   render: function() {
     var numberOfCols = 12 / this.props.number;
     var colClass = 'col-xs-' + numberOfCols;
+    var completedClass = this.props.completed ? 'completed' : '';
     return React.DOM.div({
-        className: 'goal-container ' + colClass
+        className: 'goal-container ' + colClass + ' ' + completedClass
       },
       null,
       React.DOM.div({
           className: 'goal ' + this.props.rowName,
         },
-        this.renderText()
+        this.renderText(),
+        React.DOM.ul({
+            className: 'actions'
+          },
+          null,
+          React.DOM.li({
+              className: 'complete action', onClick: this.toggleCompleted
+            },
+            (this.props.completed ? 'uncomplete' : 'complete')
+          ),
+          React.DOM.li({
+              className: 'edit action',
+              onClick: this.toggleName,
+            },
+            'edit'
+          )
+        )
       )
     );
   },
   getInitialState: function() {
     return {
-      //name: this.props.name,
       editing: false
     };
-  },
-  componentDidMount: function() {
-    //console.log('goal item did mount');
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     return nextState.editing !== this.state.editing ||
       nextProps.name !== this.props.name ||
+      nextProps.completed !== this.props.completed ||
       nextProps.id !== this.props.id;
   },
   componentDidUpdate: function(prevProps, prevState) {
@@ -54,30 +68,32 @@ var GoalItem = React.createClass({displayName: 'Goal',
       var className = this.props.name === '' ? 'empty-goal' : '';
       return React.DOM.div({
         ref: 'goalItem',
-        onClick: this.toggleName,
         className: className
       },
-        this.props.name || 'edit'
+        this.props.name || 'dust'
       );
     }
   },
   handleChange: function() {
-    this.props.onChange(this.refs.goalItemInput.getDOMNode().value);
+    this.props.onChange('name', this.refs.goalItemInput.getDOMNode().value);
   },
   toggleName: function(e) {
-    //console.log('toggleName()', this.props.key);
     if (e) e.preventDefault();
     this.setState({editing: !this.state.editing});
+  },
+  toggleCompleted: function() {
+    this.props.onChange('completed', !this.props.completed);
   }
 });
 
 var GoalRow = React.createClass({displayName: 'GoalRow',
   render: function() {
     var _that = this;
-    var goalItems = this.props.els.map(function(elName, elIndex) {
+    var goalItems = this.props.els.map(function(el, elIndex) {
       return GoalItem({
         key: _that.props.key + '.goalItem' + elIndex,
-        name: elName,
+        name: el.name,
+        completed: el.completed,
         number: _that.props.els.length,
         onGoalNameChange: _that.updateGoalText,
         rowName: _that.props.rowName,
@@ -89,11 +105,7 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
       [{className: 'row goal-row'}, null]
         .concat(goalItems));
   },
-  componentDidUpdate: function(prevProps, prevState) {
-    //console.log('goal row did update');
-  },
   componentDidMount: function() {
-    //console.log('goal row did mount');
     var goals = $(this.getDOMNode()).find('.goal');
     this.equalizeHeights(goals, Math.max.apply(
       null, _.map(goals, function(g) {
@@ -117,6 +129,13 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
   }
 });
 
+var defaultTask = function() {
+  return {
+    name: '',
+    completed: false
+  };
+};
+
 var GoalContainer = React.createClass({displayName: 'GoalContainer',
   getInitialState: function() {
     var lsGoals = localStorage.getItem('goals');
@@ -127,11 +146,11 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
         rows: [
           {
             name: 'primary',
-            els: _.times(1, function() { return ''; })
+            els: _.times(1, defaultTask)
           },
           {
             name: 'secondary',
-            els: _.times(3, function() { return ''; })
+            els: _.times(3, defaultTask)
           }
         ]
       };
@@ -151,9 +170,9 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
       className: 'goal-container'
     }, null].concat(rows));
   },
-  onChange: function(rowIndex, elIndex, newValue) {
+  onChange: function(rowIndex, elIndex, key, newValue) {
     var newRows = _.clone(this.state.rows);
-    newRows[rowIndex].els[elIndex] = newValue;
+    newRows[rowIndex].els[elIndex][key] = newValue;
     this.setState({rows: newRows});
     localStorage.setItem('goals', JSON.stringify(this.state));
   }
