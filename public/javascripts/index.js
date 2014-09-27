@@ -25,6 +25,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
   componentDidUpdate: function() {
     //console.log('goal componentDidUpdate');
     this.props.onGoalNameChange();
+    this.refs.goalItemInput.getDOMNode().focus();
   },
   renderText: function() {
     if (this.state.editing) {
