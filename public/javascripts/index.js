@@ -22,10 +22,16 @@ var GoalItem = React.createClass({displayName: 'Goal',
   componentDidMount: function() {
     //console.log('goal item did mount');
   },
-  componentDidUpdate: function() {
-    //console.log('goal componentDidUpdate');
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return nextState.editing !== this.state.editing ||
+      nextProps.name !== this.props.name ||
+      nextProps.id !== this.props.id;
+  },
+  componentDidUpdate: function(prevProps, prevState) {
     this.props.onGoalNameChange();
-    this.refs.goalItemInput.getDOMNode().focus();
+    if (this.state.editing) {
+      this.refs.goalItemInput.getDOMNode().focus();
+    }
   },
   renderText: function() {
     if (this.state.editing) {
@@ -45,7 +51,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
          )
       );
     } else {
-      var className = this.props.name == '' ? 'empty-goal' : '';
+      var className = this.props.name === '' ? 'empty-goal' : '';
       return React.DOM.div({
         ref: 'goalItem',
         onClick: this.toggleName,
@@ -59,6 +65,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
     this.props.onChange(this.refs.goalItemInput.getDOMNode().value);
   },
   toggleName: function(e) {
+    //console.log('toggleName()', this.props.key);
     if (e) e.preventDefault();
     this.setState({editing: !this.state.editing});
   }
@@ -69,12 +76,13 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
     var _that = this;
     var goalItems = this.props.els.map(function(elName, elIndex) {
       return GoalItem({
+        key: _that.props.key + '.goalItem' + elIndex,
         name: elName,
         number: _that.props.els.length,
         onGoalNameChange: _that.updateGoalText,
         rowName: _that.props.rowName,
         onChange: _that.props.onChange.bind(null, elIndex)
-      })
+      });
     });
     return React.DOM.div.apply(
       this,
@@ -111,42 +119,43 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
 
 var GoalContainer = React.createClass({displayName: 'GoalContainer',
   getInitialState: function() {
-    return {
-      rows: [
-        {
-          name: 'primary',
-          els: _.times(1, function() { return ''})
-        },
-        {
-          name: 'secondary',
-          els: _.times(3, function() { return ''})
-        }
-      ]
+    var lsGoals = localStorage.getItem('goals');
+    if (lsGoals) {
+      return JSON.parse(lsGoals);
+    } else {
+      return {
+        rows: [
+          {
+            name: 'primary',
+            els: _.times(1, function() { return ''; })
+          },
+          {
+            name: 'secondary',
+            els: _.times(3, function() { return ''; })
+          }
+        ]
+      };
     }
   },
   render: function() {
     var _that = this;
-    var rows = this.state.rows.map(function(row, rowwIndex) {
+    var rows = this.state.rows.map(function(row, rowIndex) {
       return GoalRow({
+        key: 'goalRow' + rowIndex,
         els: row.els,
         rowName: row.name,
-        onChange: _that.onChange.bind(null, rowwIndex)
+        onChange: _that.onChange.bind(null, rowIndex)
       });
     });
     return React.DOM.div.apply(this, [{
-      className: 'goal-container',
-      onClick: this.serialize
+      className: 'goal-container'
     }, null].concat(rows));
   },
   onChange: function(rowIndex, elIndex, newValue) {
-    console.log('changing', rowIndex, elIndex, 'to', newValue);
     var newRows = _.clone(this.state.rows);
     newRows[rowIndex].els[elIndex] = newValue;
     this.setState({rows: newRows});
-  },
-  serialize: function() {
-    //console.log(this.refs);
-    //console.log(this.refs.goalRow.getDOMNode());
+    localStorage.setItem('goals', JSON.stringify(this.state));
   }
 });
 
