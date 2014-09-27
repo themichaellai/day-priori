@@ -37,7 +37,8 @@ var GoalItem = React.createClass({displayName: 'Goal',
            type: 'text',
            value: this.state.name,
            onChange: this.handleChange,
-           onSubmit: this.toggleName
+           onSubmit: this.toggleName,
+           onBlur: this.toggleName
          },
            null
          )
