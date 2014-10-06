@@ -8,9 +8,14 @@ var GoalItem = React.createClass({displayName: 'Goal',
       },
       null,
       React.DOM.div({
-          className: 'goal ' + this.props.rowName,
+        className: 'goal ' + this.props.rowName,
+      },
+        null,
+        React.DOM.div({
+          className: 'goalText'
         },
-        this.renderText(),
+          this.renderText()
+        ),
         React.DOM.ul({
             className: 'actions'
           },
@@ -106,24 +111,20 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
         .concat(goalItems));
   },
   componentDidMount: function() {
-    var goals = $(this.getDOMNode()).find('.goal');
-    this.equalizeHeights(goals, Math.max.apply(
-      null, _.map(goals, function(g) {
-        return $(g).outerHeight(true);
-      })));
+    var goals = $(this.getDOMNode()).find('.goalText');
+    this.equalizeHeights(goals, 'outerHeight');
   },
   updateGoalText: function() {
-    this.equalizeHeights($(this.getDOMNode()).find('.goal'));
+    var goals = $(this.getDOMNode()).find('.goalText');
+    this.equalizeHeights(goals, 'height');
   },
-  equalizeHeights: function(goals, maxHeightIn) {
-    //console.log('equalizeHeights');
-    var maxHeight = maxHeightIn || Math.max.apply(
-      null, _.map(goals, function(g) {
-        return $(g).height();
-      }));
-    //console.log('maxHeight', maxHeight);
-    _.each(goals, function(g) {
-      //console.log('setting to', maxHeight);
+  equalizeHeights: function(goals, divHeightFunction) {
+    var maxHeight = Math.max.apply(null, _.map(goals, function(g) {
+        return $(g)[divHeightFunction]();
+      })
+    );
+    var goalContainers = $(this.getDOMNode()).find('.goal');
+    _.each(goalContainers, function(g) {
       $(g).height(maxHeight);
     });
   }
