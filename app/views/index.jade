@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title day priori
+
+    // build:css(.tmp) styles/main.css
+    link(href="styles/index.css" rel="stylesheet")
+    // endbuild
+    meta(content="width=device-width" name="viewport")
+  body
+    .container
+      #content
+    // build:js(.) js/main.js
+    script(src="bower_components/underscore/underscore-min.js")
+    script(src="bower_components/react/react.js")
+    script(src="bower_components/jquery/dist/jquery.min.js")
+    script(src="app/js/index.js")
+    // endbuild
