@@ -14,9 +14,6 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-sass-official": "~3.2.0+2",
-    "react": "~0.11.2",
-    "jquery": "~2.1.1",
-    "underscore": "~1.7.0"
+    "bootstrap-sass-official": "~3.2.0+2"
   }
 }
