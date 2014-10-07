@@ -6,7 +6,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
     var colClass = 'col-xs-' + numberOfCols;
     var completedClass = this.props.completed ? 'completed' : '';
     return React.DOM.div({
-        className: 'goal-container ' + colClass + ' ' + completedClass
+        className: 'goal-content-container ' + colClass + ' ' + completedClass
       },
       null,
       React.DOM.div({

@@ -9,8 +9,9 @@ body {
   margin-top: 40px;
 }
 
-.goal-container {
+.goal-content-container {
   padding: 0px;
+  position: relative;
 }
 
 .goal {
@@ -83,4 +84,14 @@ body {
   .goal {
     padding: 20px;
   }
+}
+
+.container-tools {
+  bottom: -30px;
+  right: -5px;
+  margin-bottom: 0px;
+}
+
+.goal-container {
+  position: relative;
 }
