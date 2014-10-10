@@ -23,12 +23,13 @@ var GoalItem = React.createClass({displayName: 'Goal',
           },
           null,
           React.DOM.li({
-              className: 'complete action', onClick: this.toggleCompleted
+              className: 'btn btn-default complete action',
+              onClick: this.toggleCompleted
             },
             (this.props.completed ? 'uncomplete' : 'complete')
           ),
           React.DOM.li({
-              className: 'edit action',
+              className: 'btn btn-default edit action',
               onClick: this.toggleName,
             },
             'edit'

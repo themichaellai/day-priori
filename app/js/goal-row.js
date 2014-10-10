@@ -2,6 +2,24 @@ var _ = require('underscore');
 var $ = require('jquery');
 var React = require('react');
 var GoalItem = require('./goal-item');
+var util = require('./util');
+
+var editOverlay = function(props) {
+  return React.DOM.ul({
+    className: 'row-edit-overlay'
+  },
+    null,
+    util.eitherOr(props.shouldBeRemovable,
+      React.DOM.li({
+          className: 'btn btn-default row-edit-action',
+          onClick: props.removeRow
+        },
+          'remove'
+        )
+    )
+  );
+};
+
 
 var GoalRow = React.createClass({displayName: 'GoalRow',
   render: function() {
@@ -17,10 +35,17 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
         onChange: _that.props.onChange.bind(null, elIndex)
       });
     });
-    return React.DOM.div.apply(
-      this,
-      [{className: 'row goal-row'}, null]
-        .concat(goalItems));
+    return util.viewApply(React.DOM.div, {
+      className: util.classList(
+        'row',
+        'goal-row',
+        this.props.editingRows ? 'row-editing' : null
+      )
+    },
+      null,
+      this.props.editingRows ? editOverlay(this.props) : null,
+      goalItems
+    );
   },
   componentDidMount: function() {
     var goals = $(this.getDOMNode()).find('.goalText');

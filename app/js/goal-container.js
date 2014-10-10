@@ -1,6 +1,7 @@
 var React = require('react');
 var _ = require('underscore');
 var GoalRow = require('./goal-row');
+var util = require('./util');
 
 var defaultTask = function() {
   return {
@@ -16,20 +17,29 @@ var defaultSecondary = function() {
   };
 };
 
-var containerTools = function(addRow) {
+var containerTools = function(addRow, editRows, state) {
+  var optionalTools = [
+    React.DOM.li({
+      className: 'btn btn-default container-tool action',
+      onClick: addRow
+    },
+      'add row'
+    )
+  ];
   return React.DOM.div({
     className: 'container-tools-container'
   },
     null,
-    React.DOM.ul({
+    util.viewApply(React.DOM.ul, {
       className: 'container-tools actions'
     },
       null,
+      util.eitherOr(state.editingRows, optionalTools),
       React.DOM.li({
-        className: 'container-tool action',
-        onClick: addRow
+        className: 'btn btn-default container-tool action',
+        onClick: editRows
       },
-        'add row'
+        state.editingRows ? 'stop editing' : 'edit'
       )
     )
   );
@@ -39,7 +49,10 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
   getInitialState: function() {
     var lsGoals = localStorage.getItem('goals');
     if (lsGoals) {
-      return JSON.parse(lsGoals);
+      return {
+        rows: JSON.parse(lsGoals),
+        editingRows: false
+      }
     } else {
       return {
         rows: [
@@ -48,7 +61,8 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
             els: _.times(1, defaultTask)
           },
           defaultSecondary()
-        ]
+        ],
+        editingRows: false
       };
     }
   },
@@ -59,12 +73,19 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
         key: 'goalRow' + rowIndex,
         els: row.els,
         rowName: row.name,
-        onChange: _that.onChange.bind(null, rowIndex)
+        onChange: _that.onChange.bind(null, rowIndex),
+        editingRows: _that.state.editingRows,
+        removeRow: _that.removeRow.bind(null, rowIndex),
+        shouldBeRemovable: rowIndex > 1 ? true : false
       });
     });
-    return React.DOM.div.apply(this, [{
+    return util.viewApply(React.DOM.div, {
       className: 'goal-container'
-    }, null].concat(rows).concat([containerTools(this.addRow)]));
+    },
+      null,
+      rows,
+      containerTools(this.addRow, this.editRows, this.state)
+    );
   },
   onChange: function(rowIndex, elIndex, key, newValue) {
     var newRows = _.clone(this.state.rows);
@@ -76,10 +97,20 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
     newRows.push(defaultSecondary());
     this.setState({rows: newRows});
   },
-  componentDidUpdate: _.debounce(function() {
-    console.log('saving to localstorage');
-    localStorage.setItem('goals', JSON.stringify(this.state));
-  }, 3000)
+  editRows: function() {
+    this.setState({editingRows: !this.state.editingRows});
+  },
+  removeRow: function(rowIndex) {
+    var newRows = _.clone(this.state.rows);
+    newRows.splice(rowIndex, 1);
+    this.setState({rows: newRows});
+  },
+  componentDidUpdate: _.debounce(function(prevProps, prevState) {
+    if (prevState.rows != this.state.rows) {
+      console.log('saving to localstorage');
+      localStorage.setItem('goals', JSON.stringify(this.state.rows));
+    }
+  }, 1000)
 });
 
 module.exports = GoalContainer;

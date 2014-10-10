@@ -1,5 +1,7 @@
 @import "../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
 
+$action-text-color: #bbb;
+
 body {
   background-color: #e5e5e5;
   font-size: 20px;
@@ -40,6 +42,7 @@ body {
 
 .goal-row {
   margin-bottom: 9px;
+  position: relative;
 }
 
 .empty-goal {
@@ -50,30 +53,21 @@ body {
   opacity: .6;
 }
 
-.action {
-  cursor: pointer;
-}
-
 .actions {
   position: absolute;
   font-size: .6em;
-  color: #bbb;
+  color: $action-text-color;
   bottom: 0px;
   right: 10px;
   padding-left: 0px;
 }
 
-.actions li {
+.actions li, .row-edit-overlay li {
   list-style-type: none;
   display: inline;
-}
-
-.actions li:after {
-  content: ' / ';
-}
-
-.actions li:last-child:after {
-  content: '';
+  font-size: .9em;
+  margin-right: 2px;
+  padding: 4px 8px;
 }
 
 @media (min-width: 1200px) {
@@ -82,7 +76,7 @@ body {
   }
 
   .goal {
-    padding: 20px;
+    padding: 20px 20px 40px 20px;
   }
 }
 
@@ -94,4 +88,17 @@ body {
 
 .goal-container {
   position: relative;
+}
+
+.row-editing .goal-content-container {
+  opacity: .6;
+}
+
+.row-edit-overlay {
+  z-index: 9;
+  padding-left: 0px;
+  margin: auto;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
