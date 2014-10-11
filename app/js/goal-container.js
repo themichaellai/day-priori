@@ -107,7 +107,6 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
   },
   componentDidUpdate: _.debounce(function(prevProps, prevState) {
     if (prevState.rows != this.state.rows) {
-      console.log('saving to localstorage');
       localStorage.setItem('goals', JSON.stringify(this.state.rows));
     }
   }, 1000)

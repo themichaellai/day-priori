@@ -1,10 +1,19 @@
 var React = require('react');
+var util = require('./util');
 
 var GoalItem = React.createClass({displayName: 'Goal',
   render: function() {
     var numberOfCols = 12 / this.props.number;
     var colClass = 'col-xs-' + numberOfCols;
     var completedClass = this.props.completed ? 'completed' : '';
+    var optional = [
+      React.DOM.li({
+          className: 'btn btn-default complete action',
+          onClick: this.toggleCompleted
+        },
+        (this.props.completed ? 'uncomplete' : 'complete')
+      ),
+    ];
     return React.DOM.div({
         className: 'goal-content-container ' + colClass + ' ' + completedClass
       },
@@ -22,11 +31,13 @@ var GoalItem = React.createClass({displayName: 'Goal',
             className: 'actions'
           },
           null,
-          React.DOM.li({
-              className: 'btn btn-default complete action',
-              onClick: this.toggleCompleted
-            },
-            (this.props.completed ? 'uncomplete' : 'complete')
+          util.eitherOr(this.props.name,
+            React.DOM.li({
+                className: 'btn btn-default complete action',
+                onClick: this.toggleCompleted
+              },
+              (this.props.completed ? 'uncomplete' : 'complete')
+            )
           ),
           React.DOM.li({
               className: 'btn btn-default edit action',
