@@ -1,3 +1,4 @@
+$container-large-desktop: 700px;
 @import "../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
 
 $action-text-color: #bbb;
@@ -103,4 +104,8 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+input {
+  width: 184px;
 }
