@@ -31,19 +31,27 @@ var GoalItem = React.createClass({displayName: 'Goal',
             className: 'actions'
           },
           null,
-          util.eitherOr(this.props.name,
+          util.eitherOr(this.props.name.length > 0 && this.state.editing,
             React.DOM.li({
-                className: 'btn btn-default complete action',
-                onClick: this.toggleCompleted
+                className: 'btn btn-default clear action',
+                onClick: this.reset
               },
-              (this.props.completed ? 'uncomplete' : 'complete')
+              'clear'
             )
           ),
           React.DOM.li({
               className: 'btn btn-default edit action',
               onClick: this.toggleName,
             },
-            'edit'
+            (this.state.editing? 'done' : 'edit')
+          ),
+          util.eitherOr(this.props.name.length > 0 && !this.state.editing,
+            React.DOM.li({
+                className: 'btn btn-default complete action',
+                onClick: this.toggleCompleted
+              },
+              (this.props.completed ? 'uncomplete' : 'complete')
+            )
           )
         )
       )
@@ -77,8 +85,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
            type: 'text',
            value: this.props.name,
            onChange: this.handleChange,
-           onSubmit: this.toggleName,
-           onBlur: this.toggleName
+           onSubmit: this.toggleName
          },
            null
          )
@@ -99,6 +106,9 @@ var GoalItem = React.createClass({displayName: 'Goal',
   toggleName: function(e) {
     if (e) e.preventDefault();
     this.setState({editing: !this.state.editing});
+  },
+  reset: function(e) {
+    this.props.onChange('name', '');
   },
   toggleCompleted: function() {
     this.props.onChange('completed', !this.props.completed);
