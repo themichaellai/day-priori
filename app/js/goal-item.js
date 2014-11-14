@@ -101,17 +101,17 @@ var GoalItem = React.createClass({displayName: 'Goal',
     }
   },
   handleChange: function() {
-    this.props.onChange('name', this.refs.goalItemInput.getDOMNode().value);
+    this.props.onChange({name: this.refs.goalItemInput.getDOMNode().value});
   },
   toggleName: function(e) {
     if (e) e.preventDefault();
     this.setState({editing: !this.state.editing});
   },
   reset: function(e) {
-    this.props.onChange('name', '');
+    this.props.onChange({name: '', completed: false});
   },
   toggleCompleted: function() {
-    this.props.onChange('completed', !this.props.completed);
+    this.props.onChange({completed: !this.props.completed});
   }
 });
 

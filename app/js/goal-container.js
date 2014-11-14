@@ -87,9 +87,11 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
       containerTools(this.addRow, this.editRows, this.state)
     );
   },
-  onChange: function(rowIndex, elIndex, key, newValue) {
+  onChange: function(rowIndex, elIndex, newVals) {
     var newRows = _.clone(this.state.rows);
-    newRows[rowIndex].els[elIndex][key] = newValue;
+    for (var key in newVals) {
+      newRows[rowIndex].els[elIndex][key] = newVals[key];
+    }
     this.setState({rows: newRows});
   },
   addRow: function() {
