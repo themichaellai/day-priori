@@ -2,6 +2,7 @@ $container-large-desktop: 700px;
 @import "../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
 
 $action-text-color: #bbb;
+$action-bg-color: #fff;
 
 body {
   background-color: #e5e5e5;
@@ -71,6 +72,14 @@ body {
   font-size: .9em;
   margin-right: 2px;
   padding: 4px 8px;
+}
+
+.action {
+  color: $action-text-color;
+  background-color: $action-bg-color;
+  &:hover {
+    background-color: $action-bg-color;
+  }
 }
 
 @media (min-width: 1200px) {
