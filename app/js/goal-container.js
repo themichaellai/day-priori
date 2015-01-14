@@ -10,20 +10,34 @@ var defaultTask = function() {
   };
 };
 
-var defaultSecondary = function() {
-  return {
-    name: 'secondary',
-    els: _.times(3, defaultTask)
-  };
+var defaultSecondary = function(tasks) {
+  if (tasks) {
+    var cleanedTasks = tasks.concat(_.times(3-tasks.length, defaultTask));
+    return {
+      name: 'secondary',
+      els: cleanedTasks
+    };
+  } else {
+    return {
+      name: 'secondary',
+      els: _.times(3, defaultTask)
+    };
+  }
 };
 
-var containerTools = function(addRow, editRows, state) {
+var containerTools = function(addRow, editRows, shiftSecondary, state) {
   var optionalTools = [
     React.DOM.li({
       className: 'btn btn-default container-tool action',
       onClick: addRow
     },
       'add row'
+    ),
+    React.DOM.li({
+      className: 'btn btn-default container-tool action',
+      onClick: shiftSecondary
+    },
+      'shift secondary'
     )
   ];
   return React.DOM.div({
@@ -52,7 +66,7 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
       return {
         rows: JSON.parse(lsGoals),
         editingRows: false
-      }
+      };
     } else {
       return {
         rows: [
@@ -84,7 +98,12 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
     },
       null,
       rows,
-      containerTools(this.addRow, this.editRows, this.state)
+      containerTools(
+        this.addRow,
+        this.editRows,
+        this.shiftSecondary,
+        this.state
+      )
     );
   },
   onChange: function(rowIndex, elIndex, newVals) {
@@ -101,6 +120,21 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
   },
   editRows: function() {
     this.setState({editingRows: !this.state.editingRows});
+  },
+  shiftSecondary: function() {
+    var primaryRows = this.state.rows.filter(function(r) {
+      return r.name === "primary";
+    });
+    var secondaryTasks = _.flatten(this.state.rows.filter(function(r) {
+      return r.name === "secondary";
+    }).map(function(r) {
+      return r.els.filter(function(el) { return el.name !== ""; });
+    }));
+    var newSecondaryRows = [];
+    for (var i = 0; i < secondaryTasks.length; i+=3) {
+      newSecondaryRows.push(defaultSecondary(secondaryTasks.slice(i, i+3)));
+    }
+    this.setState({rows: primaryRows.concat(newSecondaryRows)});
   },
   removeRow: function(rowIndex) {
     var newRows = _.clone(this.state.rows);
