@@ -44,7 +44,7 @@ var containerTools = function(addRow, editRows, shiftSecondary, state) {
     className: 'container-tools-container'
   },
     null,
-    util.viewApply(React.DOM.ul, {
+    React.DOM.ul({
       className: 'container-tools actions'
     },
       null,
@@ -93,7 +93,7 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
         shouldBeRemovable: rowIndex > 1 ? true : false
       });
     });
-    return util.viewApply(React.DOM.div, {
+    return React.DOM.div({
       className: 'goal-container'
     },
       null,

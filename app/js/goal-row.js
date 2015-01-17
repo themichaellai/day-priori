@@ -35,7 +35,7 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
         onChange: _that.props.onChange.bind(null, elIndex)
       });
     });
-    return util.viewApply(React.DOM.div, {
+    return React.DOM.div({
       className: util.classList(
         'row',
         'goal-row',
