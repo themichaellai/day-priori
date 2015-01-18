@@ -65,7 +65,8 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
     if (lsGoals) {
       return {
         rows: JSON.parse(lsGoals),
-        editingRows: false
+        editingRows: false,
+        swappingItem: null
       };
     } else {
       return {
@@ -76,7 +77,8 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
           },
           defaultSecondary()
         ],
-        editingRows: false
+        editingRows: false,
+        swappingItem: null
       };
     }
   },
@@ -87,10 +89,14 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
         key: 'goalRow' + rowIndex,
         els: row.els,
         rowName: row.name,
+        rowIndex: rowIndex,
         onChange: _that.onChange.bind(null, rowIndex),
         editingRows: _that.state.editingRows,
         removeRow: _that.removeRow.bind(null, rowIndex),
-        shouldBeRemovable: rowIndex > 1 ? true : false
+        shouldBeRemovable: rowIndex > 1 ? true : false,
+        swappingItem: _that.state.swappingItem,
+        swap: _that.boundSwapItems(),
+        startSwap: _that.startSwap
       });
     });
     return React.DOM.div({
@@ -135,6 +141,31 @@ var GoalContainer = React.createClass({displayName: 'GoalContainer',
       newSecondaryRows.push(defaultSecondary(secondaryTasks.slice(i, i+3)));
     }
     this.setState({rows: primaryRows.concat(newSecondaryRows)});
+  },
+  startSwap: function(item) {
+    this.setState({swappingItem: item});
+  },
+  endSwap: function() {
+    this.setState({swappingItem: null});
+  },
+  swapItems: function(aRow, aIndex, bRow, bIndex) {
+    var newRows = _.clone(this.state.rows);
+    var t = newRows[aRow].els[aIndex];
+    newRows[aRow].els[aIndex] = newRows[bRow].els[bIndex];
+    newRows[bRow].els[bIndex] = t;
+    this.setState({rows: newRows});
+    this.endSwap();
+  },
+  boundSwapItems: function() {
+    if (this.state.swappingItem) {
+      return this.swapItems.bind(
+        this,
+        this.state.swappingItem.rowIndex,
+        this.state.swappingItem.elIndex
+      );
+    } else {
+      return function() {};
+    }
   },
   removeRow: function(rowIndex) {
     var newRows = _.clone(this.state.rows);

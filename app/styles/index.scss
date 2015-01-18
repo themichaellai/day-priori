@@ -118,3 +118,12 @@ body {
 input {
   width: 184px;
 }
+
+.being-swapped .goal-text {
+  opacity: .6;
+}
+
+.swap-in-progress {
+  border: 1px dashed black;
+  cursor: pointer;
+}

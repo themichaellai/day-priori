@@ -1,5 +1,8 @@
 var React = require('react');
+var DOM = React.DOM;
 var util = require('./util');
+var eitherOr = util.eitherOr;
+var classList = util.classList;
 
 var GoalItem = React.createClass({displayName: 'Goal',
   render: function() {
@@ -7,53 +10,39 @@ var GoalItem = React.createClass({displayName: 'Goal',
     var colClass = 'col-xs-' + numberOfCols;
     var completedClass = this.props.completed ? 'completed' : '';
     var optional = [
-      React.DOM.li({
+      DOM.li({
           className: 'btn btn-default complete action',
           onClick: this.toggleCompleted
         },
         (this.props.completed ? 'uncomplete' : 'complete')
       ),
     ];
-    return React.DOM.div({
-        className: 'goal-content-container ' + colClass + ' ' + completedClass
+    return DOM.div({
+        className: classList(
+          'goal-content-container',
+          colClass,
+          completedClass
+        ),
+        onClick: eitherOr(this.props.swappingItem, this.swap)
       },
       null,
-      React.DOM.div({
-        className: 'goal ' + this.props.rowName,
+      DOM.div({
+        className: classList(
+          'goal',
+          this.props.rowName,
+          util.eitherOr(this.beingSwapped(), 'being-swapped'),
+          util.eitherOr(
+            !this.beingSwapped() && this.props.swappingItem,
+            'swap-in-progress')
+        )
       },
         null,
-        React.DOM.div({
-          className: 'goalText'
+        DOM.div({
+          className: 'goal-text'
         },
           this.renderText()
         ),
-        React.DOM.ul({
-            className: 'actions'
-          },
-          null,
-          util.eitherOr(this.props.name.length > 0 && this.state.editing,
-            React.DOM.li({
-                className: 'btn btn-default clear action',
-                onClick: this.reset
-              },
-              'clear'
-            )
-          ),
-          React.DOM.li({
-              className: 'btn btn-default edit action',
-              onClick: this.toggleName,
-            },
-            (this.state.editing? 'done' : 'edit')
-          ),
-          util.eitherOr(this.props.name.length > 0 && !this.state.editing,
-            React.DOM.li({
-                className: 'btn btn-default complete action',
-                onClick: this.toggleCompleted
-              },
-              (this.props.completed ? 'uncomplete' : 'complete')
-            )
-          )
-        )
+        this.actionRow()
       )
     );
   },
@@ -62,13 +51,8 @@ var GoalItem = React.createClass({displayName: 'Goal',
       editing: false
     };
   },
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return nextState.editing !== this.state.editing ||
-      nextProps.name !== this.props.name ||
-      nextProps.completed !== this.props.completed ||
-      nextProps.id !== this.props.id;
-  },
   componentDidUpdate: function(prevProps, prevState) {
+    console.log('componentDidUpdate');
     this.props.onGoalNameChange();
     if (this.state.editing) {
       this.refs.goalItemInput.getDOMNode().focus();
@@ -76,11 +60,11 @@ var GoalItem = React.createClass({displayName: 'Goal',
   },
   renderText: function() {
     if (this.state.editing) {
-      return React.DOM.form({
+      return DOM.form({
           onSubmit: this.toggleName
         },
         null,
-        React.DOM.input({
+        DOM.input({
            ref: 'goalItemInput',
            type: 'text',
            value: this.props.name,
@@ -92,7 +76,7 @@ var GoalItem = React.createClass({displayName: 'Goal',
       );
     } else {
       var className = this.props.name === '' ? 'empty-goal' : '';
-      return React.DOM.div({
+      return DOM.div({
         ref: 'goalItem',
         className: className
       },
@@ -110,8 +94,67 @@ var GoalItem = React.createClass({displayName: 'Goal',
   reset: function(e) {
     this.props.onChange({name: '', completed: false});
   },
+  startSwap: function() {
+    this.setState({editing: false});
+    this.props.startSwap({
+      rowIndex: this.props.rowIndex,
+      elIndex: this.props.elIndex
+    });
+  },
+  swap: function() {
+    this.props.swap(this.props.rowIndex, this.props.elIndex);
+  },
+  beingSwapped: function() {
+    if ((si = this.props.swappingItem) !== null) {
+      return si.rowIndex === this.props.rowIndex &&
+          si.elIndex === this.props.elIndex;
+    } else {
+      return false;
+    }
+  },
   toggleCompleted: function() {
     this.props.onChange({completed: !this.props.completed});
+  },
+  actionRow: function() {
+    return eitherOr(this.props.swappingItem === null,
+      eitherOr(!this.props.editingRows,
+        DOM.ul({
+          className: 'actions'
+        },
+          null,
+          eitherOr(this.props.name.length > 0 && this.state.editing,
+            [
+              DOM.li({
+                className: 'btn btn-default swap action',
+                onClick: this.startSwap
+              },
+                'swap'
+              ),
+              DOM.li({
+                  className: 'btn btn-default clear action',
+                  onClick: this.reset
+                },
+                'clear'
+              )
+            ]
+          ),
+          DOM.li({
+              className: 'btn btn-default edit action',
+              onClick: this.toggleName,
+            },
+            (this.state.editing? 'done' : 'edit')
+          ),
+          eitherOr(this.props.name.length > 0 && !this.state.editing,
+            DOM.li({
+                className: 'btn btn-default complete action',
+                onClick: this.toggleCompleted
+              },
+              (this.props.completed ? 'uncomplete' : 'complete')
+            )
+          )
+        )
+      )
+    );
   }
 });
 

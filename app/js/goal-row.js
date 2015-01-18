@@ -28,11 +28,17 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
       return GoalItem({
         key: _that.props.key + '.goalItem' + elIndex,
         name: el.name,
+        rowIndex: _that.props.rowIndex,
+        elIndex: elIndex,
         completed: el.completed,
+        editingRows: _that.props.editingRows,
         number: _that.props.els.length,
         onGoalNameChange: _that.updateGoalText,
         rowName: _that.props.rowName,
-        onChange: _that.props.onChange.bind(null, elIndex)
+        onChange: _that.props.onChange.bind(null, elIndex),
+        swappingItem: _that.props.swappingItem,
+        swap: _that.props.swap,
+        startSwap: _that.props.startSwap
       });
     });
     return React.DOM.div({
@@ -48,11 +54,12 @@ var GoalRow = React.createClass({displayName: 'GoalRow',
     );
   },
   componentDidMount: function() {
-    var goals = $(this.getDOMNode()).find('.goalText');
+    var goals = $(this.getDOMNode()).find('.goal-text');
     this.equalizeHeights(goals, 'outerHeight');
   },
   updateGoalText: function() {
-    var goals = $(this.getDOMNode()).find('.goalText');
+    console.log('updateGoalText');
+    var goals = $(this.getDOMNode()).find('.goal-text');
     this.equalizeHeights(goals, 'height');
   },
   equalizeHeights: function(goals, divHeightFunction) {
